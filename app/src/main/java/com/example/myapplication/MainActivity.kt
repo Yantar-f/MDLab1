@@ -1,8 +1,10 @@
 package com.example.myapplication
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.Image
@@ -17,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import java.time.Instant
+import java.time.LocalDateTime
 
 
 class MainActivity : ComponentActivity() {
@@ -26,14 +30,14 @@ class MainActivity : ComponentActivity() {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    LazyColumn {
-                        item { Header() }
-                        item { ProductInfo() }
-                        item { Comments() }
-                        item {
-                            Button(onClick = { /*TODO*/ }) {
+                    Column {
+                        LazyColumn {
+                            item { Header() }
+                            item { ProductInfo() }
+                            item { Comments() }
+                        }
+                        Button(onClick = { /*TODO*/ }) {
 
-                            }
                         }
                     }
                 }
@@ -83,6 +87,38 @@ fun ProductDescription(text : String = "Dota 2 description text") {
 @Composable
 fun Comments(/*commentCards : List<CommentCard> = listOf()*/) {
 
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun CommentCard(
+    authorName : String = "Author",
+    date : LocalDateTime = LocalDateTime.now(),
+    text : String = "some comment"
+) {
+    Column {
+        Row {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = "header image"
+            )
+
+            Column {
+                Text(text = authorName)
+                Text(text = date.toString())
+            }
+        }
+
+        Text(text = text)
+    }
+
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true)
+@Composable
+fun CommentCardPreview() {
+    CommentCard()
 }
 
 @Preview(showBackground = true)
