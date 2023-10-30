@@ -8,22 +8,30 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import java.time.Instant
 import java.time.LocalDateTime
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -84,34 +92,55 @@ fun ProductDescription(text : String = "Dota 2 description text") {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Comments(/*commentCards : List<CommentCard> = listOf()*/) {
+fun Comments(comments : List<Comment> = listOf(Comment())) {
+    LazyColumn {
+        items(comments) { comment -> CommentCard(comment) }
+    }
+}
 
+@RequiresApi(Build.VERSION_CODES.O)
+class Comment {
+    var authorName : String = "Author"
+    var date : LocalDateTime = LocalDateTime.now()
+    var text : String = "some comment"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CommentCard(
-    authorName : String = "Author",
-    date : LocalDateTime = LocalDateTime.now(),
-    text : String = "some comment"
-) {
+fun CommentCard(comment : Comment = Comment()) {
     Column {
         Row {
-            Image(
-                painter = painterResource(R.drawable.ic_launcher_foreground),
-                contentDescription = "header image"
-            )
+            Box() {
+                Image(
+                    painter = painterResource(R.drawable.header_img),
+                    contentDescription = "header image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .padding(4.dp)
+                        .clip(CircleShape)
+                )
+            }
 
             Column {
-                Text(text = authorName)
-                Text(text = date.toString())
+                Text(text = comment.authorName)
+                Text(text = comment.date.toString())
             }
         }
 
-        Text(text = text)
+        Text(text = comment.text)
     }
 
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true)
+@Composable
+fun CommentsPreview() {
+    Comments(listOf(Comment(), Comment(), Comment()))
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
