@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -76,7 +74,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Header(horizontalSidePadding : Dp = 10.dp) {
-    val overlayOffset : Float = 100f
+    val overlayOffset = 100f
 
     Column {
         Image(
@@ -103,7 +101,7 @@ fun Header(horizontalSidePadding : Dp = 10.dp) {
                     .padding(horizontalSidePadding)
                     .clip(RoundedCornerShape(20.dp))
                     .border(
-                        3.dp,
+                        2.dp,
                         MaterialTheme.colorScheme.secondary,
                         RoundedCornerShape(20.dp)
                     )
@@ -179,16 +177,30 @@ fun ProductTagPreview() {
 
 @Composable
 fun VideoList(
-    videos : List<Painter> = listOf()
+    videos : List<Int> = listOf(
+        R.drawable.video_preview_2,
+        R.drawable.header_img,
+        R.drawable.video_preview_1
+    )
 ) {
-    LazyRow {
-        items(videos) { videoPreview ->
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        items(videos) { videoPreviewID ->
             Image(
-                painter = videoPreview,
-                contentDescription = "preview $videoPreview"
+                painter = painterResource(id = videoPreviewID),
+                contentDescription = "preview $videoPreviewID",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(220.dp, 120.dp)
+                    .clip(RoundedCornerShape(15.dp))
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun VideoListPreview() {
+    VideoList()
 }
 
 @Composable
@@ -207,10 +219,8 @@ fun ProductDescriptionPreview() {
 fun ReviewSection(comments : List<Comment> = listOf(Comment(), Comment(), Comment())) {
     Column {
         RatingInfo()
-        Box {
-            LazyColumn {
-                items(comments) { comment -> CommentCard(comment) }
-            }
+        LazyColumn {
+            items(comments) { comment -> CommentCard(comment) }
         }
     }
 }
