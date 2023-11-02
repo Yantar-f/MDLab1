@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -29,14 +30,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.example.myapplication.entity.Comment
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme {
+            MyApplicationTheme(darkTheme = true) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
                             Header(horizontalSidePadding)
 
                             Box(
-                                Modifier.padding(horizontalSidePadding, 0.dp)
+                                Modifier.padding(horizontalSidePadding, 15.dp)
                             ) {
                                 Column {
                                     ProductInfo()
@@ -73,51 +74,50 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Header(horizontalSidePadding : Dp = 10.dp) {
+fun Header(horizontalSidePadding : Dp = 15.dp) {
     val overlayOffset = 100f
 
-    Column {
+    ConstraintLayout {
+        val (headerImg, headerLogo, title, stats) = createRefs()
         Image(
             painter = painterResource(R.drawable.header_sqr_img),
             contentDescription = "header image",
+            contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .fillMaxWidth()
-                .zIndex(1f),
-            contentScale = ContentScale.FillWidth
+                .constrainAs(headerImg) {}
         )
 
-        Row(
+        Image(
+            painter = painterResource(R.drawable.product_logo_img),
+            contentDescription = "logo image",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .zIndex(2f)
-                .graphicsLayer { translationY = -overlayOffset }
-                .wrapContentSize(unbounded = true)
-        ) {
-            Image(
-                painter = painterResource(R.drawable.product_logo_img),
-                contentDescription = "logo image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(120.dp)
-                    .padding(horizontalSidePadding)
-                    .clip(RoundedCornerShape(20.dp))
-                    .border(
-                        2.dp,
-                        MaterialTheme.colorScheme.secondary,
-                        RoundedCornerShape(20.dp)
-                    )
-            )
-
-            Column (
-                Modifier
-                    .zIndex(2f)
-                    .graphicsLayer { translationY = overlayOffset }
-            ) {
-                Text(
-                    text = "DoTA 2"
+                .height(90.dp)
+                .width(120.dp)
+                .padding(horizontalSidePadding, 0.dp)
+                .clip(RoundedCornerShape(15.dp))
+                .border(
+                    2.dp,
+                    MaterialTheme.colorScheme.secondary,
+                    RoundedCornerShape(15.dp)
                 )
+                .constrainAs(headerLogo) {
+                    top.linkTo(headerImg.bottom, margin = (-30).dp)
+                }
+        )
 
-                HeaderStats()
-            }
+        Column (
+            Modifier
+                .constrainAs(title) {
+                    bottom.linkTo(headerLogo.bottom, margin = (10).dp)
+                    start.linkTo(headerLogo.end)
+                }
+        ){
+            Text(
+                text = "DoTA 2"
+            )
+            HeaderStats()
         }
     }
 }
@@ -140,9 +140,11 @@ fun HeaderStats() {
 
 @Composable
 fun ProductInfo() {
-    ProductTags()
-    ProductDescription()
-    VideoList()
+    Column {
+        ProductTags()
+        ProductDescription()
+        VideoList()
+    }
 }
 
 @Composable
@@ -216,7 +218,7 @@ fun ProductDescriptionPreview() {
 }
 
 @Composable
-fun ReviewSection(comments : List<Comment> = listOf(Comment(), Comment(), Comment())) {
+fun ReviewSection(comments : List<Comment> = listOf(Comment(), Comment(), Comment(), Comment(), Comment(), Comment(), Comment(), Comment(), Comment(), Comment())) {
     Column {
         RatingInfo()
         LazyColumn {
@@ -276,7 +278,6 @@ fun InstallButton() {
         modifier = Modifier
             .fillMaxWidth()
             .height(75.dp),
-
         shape = RoundedCornerShape(10.dp),
         onClick = { /*TODO*/ }
     ) {
