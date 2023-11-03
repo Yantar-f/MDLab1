@@ -1,12 +1,12 @@
 package com.example.myapplication
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,29 +15,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.example.myapplication.entity.Comment
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
@@ -46,18 +42,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme(darkTheme = true) {
+            MyApplicationTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = colorResource(R.color.d_surface)
                 ) {
                     Column {
-                        val horizontalSidePadding = 15.dp
                         Column {
-                            Header(horizontalSidePadding)
+                            Header()
 
                             Box(
-                                Modifier.padding(horizontalSidePadding, 15.dp)
+                                Modifier.padding(20.dp, 20.dp)
                             ) {
                                 Column {
                                     ProductInfo()
@@ -74,7 +69,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Header(horizontalSidePadding : Dp = 15.dp) {
+fun Header() {
     val overlayOffset = 100f
 
     ConstraintLayout {
@@ -88,24 +83,28 @@ fun Header(horizontalSidePadding : Dp = 15.dp) {
                 .constrainAs(headerImg) {}
         )
 
-        Image(
-            painter = painterResource(R.drawable.product_logo_img),
-            contentDescription = "logo image",
-            contentScale = ContentScale.Crop,
+        Surface(
             modifier = Modifier
-                .height(90.dp)
-                .width(120.dp)
-                .padding(horizontalSidePadding, 0.dp)
+                .size(120.dp, 120.dp - 40.dp)
+                .padding(20.dp, 0.dp)
                 .clip(RoundedCornerShape(15.dp))
                 .border(
                     2.dp,
-                    MaterialTheme.colorScheme.secondary,
+                    color = colorResource(R.color.d_logo_border),
                     RoundedCornerShape(15.dp)
                 )
                 .constrainAs(headerLogo) {
-                    top.linkTo(headerImg.bottom, margin = (-30).dp)
-                }
-        )
+                    top.linkTo(headerImg.bottom, margin = (-20).dp)
+                },
+            color = colorResource(R.color.black),
+        ) {
+            Image(
+                painter = painterResource(R.drawable.header_logo),
+                contentDescription = "logo image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.padding(15.dp, 15.dp)
+            )
+        }
 
         Column (
             Modifier
@@ -115,19 +114,16 @@ fun Header(horizontalSidePadding : Dp = 15.dp) {
                 }
         ){
             Text(
-                text = "DoTA 2"
+                text = "DoTA 2",
+                color = colorResource(R.color.white),
+                fontWeight = FontWeight.Bold
             )
             HeaderStats()
         }
     }
 }
 
-@Composable
-fun HeaderPicture() {
-
-}
-
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0x050b18)
 @Composable
 fun HeaderPreview() {
     Header()
@@ -160,18 +156,21 @@ fun ProductTags(
 ) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         items(tags) {tag ->
-            Text(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(15.dp))
-                    .background(Color.Blue)
-                    .padding(10.dp, 2.dp),
-                text = tag
-            )
+            Surface(
+                color = colorResource(R.color.d_tag_background).copy(alpha = 0.24f),
+                modifier = Modifier.clip(RoundedCornerShape(20.dp))
+            ){
+                Text(
+                    modifier = Modifier.padding(15.dp, 6.dp),
+                    text = tag,
+                    color = colorResource(R.color.d_tag_text_color)
+                )
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0x050b18)
 @Composable
 fun ProductTagPreview() {
     ProductTags()
@@ -199,7 +198,7 @@ fun VideoList(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,  backgroundColor = 0x050b18)
 @Composable
 fun VideoListPreview() {
     VideoList()
@@ -211,7 +210,7 @@ fun ProductDescription(text : String = "Dota 2 description text") {
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,  backgroundColor = 0x050b18)
 @Composable
 fun ProductDescriptionPreview() {
     ProductDescription()
@@ -260,13 +259,13 @@ fun CommentCard(comment : Comment = Comment()) {
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,  backgroundColor = 0x050b18)
 @Composable
 fun CommentCardPreview() {
     CommentCard()
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,  backgroundColor = 0x050b18)
 @Composable
 fun ReviewSectionPreview() {
     ReviewSection(listOf(Comment(), Comment(), Comment()))
@@ -288,7 +287,7 @@ fun InstallButton() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,  backgroundColor = 0x050b18)
 @Composable
 fun InstallButtonPreview() {
     InstallButton()
