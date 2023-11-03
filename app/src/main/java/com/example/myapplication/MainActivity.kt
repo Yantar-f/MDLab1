@@ -1,6 +1,5 @@
 package com.example.myapplication
 
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,16 +20,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -43,30 +45,41 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorResource(R.color.d_surface)
-                ) {
-                    Column {
-                        Column {
-                            Header()
-
-                            Box(
-                                Modifier.padding(20.dp, 20.dp)
-                            ) {
-                                Column {
-                                    ProductInfo()
-                                    ReviewSection()
-                                    InstallButton()
-                                }
-                            }
-                        }
-                    }
-                }
+                DotaScreen()
             }
         }
     }
 }
+
+@Composable
+fun DotaScreen() {
+    val comments = listOf(
+        Comment(),
+        Comment(),
+        Comment(),
+        Comment(),
+        Comment(),
+        Comment(),
+        Comment(),
+        Comment(),
+        Comment(),
+        Comment()
+    )
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = colorResource(R.color.d_surface)
+    ) {
+        LazyColumn {
+            item { Header() }
+            item { Box(Modifier.padding(20.dp, 20.dp)) { ProductInfo() } }
+            item { Box(Modifier.padding(20.dp, 20.dp)) { RatingInfo() } }
+            items(comments) {comment -> Box(Modifier.padding(20.dp, 20.dp)) { CommentCard(comment) }}
+            item { Box(Modifier.padding(20.dp, 20.dp)) { InstallButton() } }
+        }
+    }
+}
+
 
 @Composable
 fun Header() {
@@ -115,7 +128,7 @@ fun Header() {
         ){
             Text(
                 text = "DoTA 2",
-                color = colorResource(R.color.white),
+                color = Color.White,
                 fontWeight = FontWeight.Bold
             )
             HeaderStats()
@@ -138,7 +151,9 @@ fun HeaderStats() {
 fun ProductInfo() {
     Column {
         ProductTags()
+        Spacer(0.dp, 15.dp)
         ProductDescription()
+        Spacer(0.dp, 15.dp)
         VideoList()
     }
 }
@@ -154,6 +169,7 @@ fun ProductTags(
         "WTF"
     )
 ) {
+
     LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         items(tags) {tag ->
             Surface(
@@ -184,7 +200,7 @@ fun VideoList(
         R.drawable.video_preview_1
     )
 ) {
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
         items(videos) { videoPreviewID ->
             Image(
                 painter = painterResource(id = videoPreviewID),
@@ -205,8 +221,11 @@ fun VideoListPreview() {
 }
 
 @Composable
-fun ProductDescription(text : String = "Dota 2 description text") {
-    Text(text = text)
+fun ProductDescription(text : String = "Dota 2 is a multiplayer online battle arena (MOBA) game which has two teams of five players compete to collectively destroy a large structure defended by the opposing team known as the \"Ancient\", whilst defending their own.") {
+    Text(
+        text = text,
+        color = colorResource(R.color.white).copy(alpha = 0.6f)
+    )
 }
 
 
@@ -214,16 +233,6 @@ fun ProductDescription(text : String = "Dota 2 description text") {
 @Composable
 fun ProductDescriptionPreview() {
     ProductDescription()
-}
-
-@Composable
-fun ReviewSection(comments : List<Comment> = listOf(Comment(), Comment(), Comment(), Comment(), Comment(), Comment(), Comment(), Comment(), Comment(), Comment())) {
-    Column {
-        RatingInfo()
-        LazyColumn {
-            items(comments) { comment -> CommentCard(comment) }
-        }
-    }
 }
 
 
@@ -236,25 +245,31 @@ fun RatingInfo() {
 fun CommentCard(comment : Comment = Comment()) {
     Column {
         Row {
-            Box {
-                Image(
-                    painter = painterResource(R.drawable.header_img),
-                    contentDescription = "header image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .padding(4.dp)
-                        .clip(CircleShape)
-                )
-            }
-
+            Image(
+                painter = painterResource(R.drawable.header_img),
+                contentDescription = "header image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(35.dp)
+                    .clip(CircleShape)
+            )
+            Spacer(10.dp, 0.dp)
             Column {
-                Text(text = comment.authorName)
-                Text(text = comment.date.toString())
+                Text(
+                    text = comment.authorName,
+                    color = Color.White
+                )
+                Text(
+                    text = comment.date.toString(),
+                    color = Color.Gray.copy(alpha = 0.8f)
+                )
             }
         }
 
-        Text(text = comment.text)
+        Text(
+            text = comment.text,
+            color = Color.White.copy(alpha = 0.6f)
+        )
     }
 }
 
@@ -265,12 +280,6 @@ fun CommentCardPreview() {
     CommentCard()
 }
 
-@Preview(showBackground = true,  backgroundColor = 0x050b18)
-@Composable
-fun ReviewSectionPreview() {
-    ReviewSection(listOf(Comment(), Comment(), Comment()))
-}
-
 @Composable
 fun InstallButton() {
     Button(
@@ -278,11 +287,13 @@ fun InstallButton() {
             .fillMaxWidth()
             .height(75.dp),
         shape = RoundedCornerShape(10.dp),
-        onClick = { /*TODO*/ }
+        onClick = { /*TODO*/ },
+        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.d_button))
     ) {
         Text(
             text = "Install",
-            fontSize = 20.sp
+            fontSize = 20.sp,
+            color = Color.Black
         )
     }
 }
@@ -293,3 +304,10 @@ fun InstallButtonPreview() {
     InstallButton()
 }
 
+@Composable
+fun Spacer(
+    horizontalPadding : Dp = 10.dp,
+    verticalPadding : Dp = 10.dp
+) {
+    Box(Modifier.padding(horizontalPadding, verticalPadding))
+}

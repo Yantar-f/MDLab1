@@ -11,4 +11,5 @@
     <color name="d_logo_border">#1f2430</color>
     <color name="d_tag_text_color">#41A0E7</color>
     <color name="d_tag_background">#44A9F4</color>
+    <color name="d_button">#F4D144</color>
 </resources>
